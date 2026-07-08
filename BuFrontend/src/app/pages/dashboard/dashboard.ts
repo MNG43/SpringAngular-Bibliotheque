@@ -8,13 +8,27 @@ import { StatsService } from '../../core/api.service';
 import { Ui } from '../../core/ui';
 import { Dashboard } from '../../core/models';
 
-interface Tile { 
-  label: string; 
-  valeur: number | string; 
-  icon: string; 
-  accent: string; 
-  description?: string;
+interface Tile {
+  label: string;
+  valeur: number | string;
+  icon: string;
+  accent: string;
   trend?: 'up' | 'down' | 'neutral';
+}
+
+interface Alert {
+  type: 'warning' | 'error' | 'info';
+  titre: string;
+  description: string;
+  action?: string;
+  actionLabel?: string;
+}
+
+interface Activite {
+  type: 'emprunt' | 'retour' | 'reservation' | 'penalite';
+  message: string;
+  utilisateur: string;
+  date: string;
 }
 
 @Component({
@@ -33,69 +47,142 @@ export class DashboardPage implements OnInit {
   tiles = computed<Tile[]>(() => {
     const d = this.data();
     if (!d) return [];
-    
-    const tauxDispo = d.totalExemplaires > 0 ? Math.round((d.exemplairesDisponibles / d.totalExemplaires) * 100) : 0;
+
     const tauxRetard = d.empruntsEnCours > 0 ? Math.round((d.empruntsEnRetard / d.empruntsEnCours) * 100) : 0;
-    
+    const trendRetard = tauxRetard > 10 ? 'down' : tauxRetard > 5 ? 'neutral' : 'up';
+
     return [
-      { 
-        label: 'Livres au catalogue', 
-        valeur: d.totalLivres, 
-        icon: 'library_books', 
-        accent: 'blue',
-        description: 'Nombre total de livres référencés'
-      },
-      { 
-        label: 'Exemplaires disponibles', 
-        valeur: `${d.exemplairesDisponibles}/${d.totalExemplaires}`, 
-        icon: 'inventory_2', 
-        accent: 'blue',
-        description: `Taux de disponibilité: ${tauxDispo}%`
-      },
-      { 
-        label: 'Membres inscrits', 
-        valeur: d.totalMembres, 
-        icon: 'group', 
-        accent: 'blue',
-        description: 'Utilisateurs actifs dans la bibliothèque'
-      },
-      { 
-        label: 'Emprunts en cours', 
-        valeur: d.empruntsEnCours, 
-        icon: 'import_contacts', 
+      {
+        label: 'Livres disponibles',
+        valeur: d.exemplairesDisponibles,
+        icon: 'menu_book',
         accent: 'green',
-        description: 'Livres actuellement empruntés'
+        trend: 'up'
       },
-      { 
-        label: 'Emprunts en retard', 
-        valeur: d.empruntsEnRetard, 
-        icon: 'running_with_errors', 
+      {
+        label: 'Emprunts en cours',
+        valeur: d.empruntsEnCours,
+        icon: 'import_contacts',
+        accent: 'blue',
+        trend: 'neutral'
+      },
+      {
+        label: 'En retard',
+        valeur: d.empruntsEnRetard,
+        icon: 'warning',
         accent: 'red',
-        description: `Taux de retard: ${tauxRetard}%`,
-        trend: d.empruntsEnRetard > 0 ? 'down' : 'neutral'
+        trend: trendRetard
       },
-      { 
-        label: 'Réservations en attente', 
-        valeur: d.reservationsEnAttente, 
-        icon: 'bookmark', 
+      {
+        label: 'Réservations',
+        valeur: d.reservationsEnAttente,
+        icon: 'bookmark',
         accent: 'amber',
-        description: 'Livres réservés par les utilisateurs'
-      },
-      { 
-        label: 'Pénalités impayées', 
-        valeur: d.penalitesImpayees, 
-        icon: 'gavel', 
-        accent: 'red',
-        description: 'Nombre de pénalités non réglées'
-      },
-      { 
-        label: 'Montant impayé (FCFA)', 
-        valeur: d.montantPenalitesImpayees.toLocaleString('fr-FR'), 
-        icon: 'payments', 
-        accent: 'amber',
-        description: 'Total des pénalités en attente de paiement'
+        trend: 'neutral'
       },
     ];
+  });
+
+  alerts = computed<Alert[]>(() => {
+    const d = this.data();
+    if (!d) return [];
+
+    const alerts: Alert[] = [];
+
+    // Alertes pour les retards
+    if (d.empruntsEnRetard > 0) {
+      const tauxRetard = d.empruntsEnCours > 0 ? Math.round((d.empruntsEnRetard / d.empruntsEnCours) * 100) : 0;
+      if (tauxRetard > 20) {
+        alerts.push({
+          type: 'error',
+          titre: `${d.empruntsEnRetard} emprunts en retard`,
+          description: `Taux de retard élevé (${tauxRetard}%). Relancez les emprunteurs.`,
+          action: 'Voir les retards',
+          actionLabel: 'Gérer'
+        });
+      } else if (tauxRetard > 10) {
+        alerts.push({
+          type: 'warning',
+          titre: `${d.empruntsEnRetard} emprunts en retard`,
+          description: `Taux de retard de ${tauxRetard}%. Surveillez les échéances.`,
+          action: 'Voir les retards',
+          actionLabel: 'Voir'
+        });
+      }
+    }
+
+    // Alertes pour les pénalités
+    if (d.montantPenalitesImpayees > 50000) {
+      alerts.push({
+        type: 'warning',
+        titre: `${d.montantPenalitesImpayees.toLocaleString('fr-FR')} FCFA impayés`,
+        description: `${d.penalitesImpayees} pénalités en attente de paiement.`,
+        action: 'Voir les pénalités',
+        actionLabel: 'Gérer'
+      });
+    }
+
+    // Alertes pour les réservations
+    if (d.reservationsEnAttente > 10) {
+      alerts.push({
+        type: 'info',
+        titre: `${d.reservationsEnAttente} réservations en attente`,
+        description: 'Beaucoup de livres sont réservés. Vérifiez les stocks.',
+        action: 'Voir les réservations',
+        actionLabel: 'Voir'
+      });
+    }
+
+    // Stock faible
+    const tauxDispo = d.totalExemplaires > 0 ? Math.round((d.exemplairesDisponibles / d.totalExemplaires) * 100) : 0;
+    if (tauxDispo < 20 && d.totalExemplaires > 0) {
+      alerts.push({
+        type: 'warning',
+        titre: 'Stock faible',
+        description: `Seulement ${tauxDispo}% des exemplaires disponibles.`,
+        action: 'Gérer les stocks',
+        actionLabel: 'Gérer'
+      });
+    }
+
+    return alerts;
+  });
+
+  activitesRecentes = computed<Activite[]>(() => {
+    const d = this.data();
+    if (!d) return [];
+
+    // Simuler des activités récentes basées sur les données
+    const activites: Activite[] = [];
+
+    if (d.empruntsEnRetard > 0) {
+      activites.push({
+        type: 'penalite',
+        message: `${d.empruntsEnRetard} emprunts en retard`,
+        utilisateur: 'Système',
+        date: "Aujourd'hui"
+      });
+    }
+
+    if (d.reservationsEnAttente > 0) {
+      activites.push({
+        type: 'reservation',
+        message: `${d.reservationsEnAttente} nouvelles réservations`,
+        utilisateur: 'Utilisateurs',
+        date: "Aujourd'hui"
+      });
+    }
+
+    if (d.empruntsEnCours > 0) {
+      activites.push({
+        type: 'emprunt',
+        message: `${d.empruntsEnCours} emprunts actifs`,
+        utilisateur: 'Bibliothèque',
+        date: "Cette semaine"
+      });
+    }
+
+    return activites.slice(0, 5);
   });
 
   // Échelle du graphe mensuel
@@ -166,6 +253,44 @@ export class DashboardPage implements OnInit {
       case 'up': return 'trend-up';
       case 'down': return 'trend-down';
       default: return 'trend-neutral';
+    }
+  }
+
+  getAlertIcon(type: 'warning' | 'error' | 'info'): string {
+    switch (type) {
+      case 'error': return 'error';
+      case 'warning': return 'warning';
+      default: return 'info';
+    }
+  }
+
+  getAlertClass(type: 'warning' | 'error' | 'info'): string {
+    switch (type) {
+      case 'error': return 'alert-error';
+      case 'warning': return 'alert-warning';
+      default: return 'alert-info';
+    }
+  }
+
+  handleAlertAction(alert: Alert): void {
+    this.ui.success(alert.action || 'Action effectuée');
+  }
+
+  getActiviteIcon(type: 'emprunt' | 'retour' | 'reservation' | 'penalite'): string {
+    switch (type) {
+      case 'emprunt': return 'import_contacts';
+      case 'retour': return 'assignment_return';
+      case 'reservation': return 'bookmark';
+      case 'penalite': return 'gavel';
+    }
+  }
+
+  getActiviteClass(type: 'emprunt' | 'retour' | 'reservation' | 'penalite'): string {
+    switch (type) {
+      case 'emprunt': return 'activite-emprunt';
+      case 'retour': return 'activite-retour';
+      case 'reservation': return 'activite-reservation';
+      case 'penalite': return 'activite-penalite';
     }
   }
 }

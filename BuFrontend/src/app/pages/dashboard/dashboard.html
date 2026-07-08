@@ -1,13 +1,16 @@
 <div class="page">
-  <div class="page-header">
+  <header class="page-header">
     <div>
+      <p class="eyebrow">Administration</p>
       <h1>Tableau de bord</h1>
-      <p class="subtitle">Vue d'ensemble de la bibliothèque en temps réel</p>
+      <p class="page-subtitle">
+        Vue d'ensemble de la bibliothèque
+      </p>
     </div>
-    <button mat-stroked-button (click)="lancerTraitements()">
+    <button mat-flat-button class="btn-primary" (click)="lancerTraitements()">
       <mat-icon>bolt</mat-icon> Lancer les traitements
     </button>
-  </div>
+  </header>
 
   <ng-container *ngIf="loading(); else dataBlock">
     <div class="empty-state"><mat-spinner diameter="40"></mat-spinner></div>
@@ -22,7 +25,6 @@
           <div class="tile-body">
             <div class="tile-value">{{ t.valeur }}</div>
             <div class="tile-label">{{ t.label }}</div>
-            <div class="tile-description" *ngIf="t.description">{{ t.description }}</div>
             <div class="tile-trend" *ngIf="t.trend">
               <mat-icon [class]="getTrendClass(t.trend)">{{ getTrendIcon(t.trend) }}</mat-icon>
             </div>
@@ -30,42 +32,87 @@
         </mat-card>
       </div>
 
+      <!-- Alertes et activités -->
+      <div class="dashboard-row">
+        <!-- Alertes -->
+        <mat-card class="alerts-card" *ngIf="alerts().length > 0">
+          <div class="section-header">
+            <h2>Alertes</h2>
+            <span class="alert-count">{{ alerts().length }}</span>
+          </div>
+          <div class="alerts-list">
+            <div class="alert-item" *ngFor="let alert of alerts()" [class]="getAlertClass(alert.type)">
+              <div class="alert-icon">
+                <mat-icon>{{ getAlertIcon(alert.type) }}</mat-icon>
+              </div>
+              <div class="alert-content">
+                <div class="alert-title">{{ alert.titre }}</div>
+                <div class="alert-description">{{ alert.description }}</div>
+              </div>
+              <button mat-stroked-button class="alert-action" (click)="handleAlertAction(alert)">
+                {{ alert.actionLabel || 'Voir' }}
+              </button>
+            </div>
+          </div>
+        </mat-card>
+
+        <!-- Activités récentes -->
+        <mat-card class="activities-card">
+          <div class="section-header">
+            <h2>Activités récentes</h2>
+          </div>
+          <div class="activities-list">
+            <div class="activity-item" *ngFor="let act of activitesRecentes()">
+              <div class="activity-icon" [class]="getActiviteClass(act.type)">
+                <mat-icon>{{ getActiviteIcon(act.type) }}</mat-icon>
+              </div>
+              <div class="activity-content">
+                <div class="activity-message">{{ act.message }}</div>
+                <div class="activity-meta">
+                  <span class="activity-user">{{ act.utilisateur }}</span>
+                  <span class="activity-date">{{ act.date }}</span>
+                </div>
+              </div>
+            </div>
+            <div class="no-activities" *ngIf="activitesRecentes().length === 0">
+              <p class="empty-hint">Aucune activité récente</p>
+            </div>
+          </div>
+        </mat-card>
+      </div>
+
       <div class="charts">
-        <ng-container *ngIf="!d || (!d.empruntsParMois?.length && !d.topLivres?.length && !d.repartitionStatuts?.length)">
+        <ng-container *ngIf="!d.empruntsParMois?.length && !d.topLivres?.length && !d.repartitionStatuts?.length">
           <div class="empty-state">
             <mat-icon class="empty-icon">bar_chart</mat-icon>
-            <p>Aucune donnée disponible pour le tableau de bord.</p>
-            <p class="muted">Les données s'afficheront une fois que des emprunts seront enregistrés.</p>
+            <p class="empty-title">Aucune donnée disponible</p>
+            <p class="empty-hint">Les données s'afficheront une fois que des emprunts seront enregistrés.</p>
           </div>
         </ng-container>
 
-        <ng-container *ngIf="d">
+        <ng-container *ngIf="d.empruntsParMois?.length || d.topLivres?.length || d.repartitionStatuts?.length">
           <!-- Emprunts par mois -->
-          <mat-card class="chart-card">
+          <mat-card class="chart-card" *ngIf="d.empruntsParMois?.length">
             <div class="chart-header">
               <h2>Emprunts par mois</h2>
               <span class="chart-subtitle">12 derniers mois</span>
             </div>
-            <div class="bar-chart" *ngIf="d.empruntsParMois?.length">
+            <div class="bar-chart">
               <div class="bar-col" *ngFor="let m of d.empruntsParMois">
                 <div class="bar-value">{{ m.nombre || '' }}</div>
                 <div class="bar" [style.height.%]="hauteurMois(m.nombre)"></div>
                 <div class="bar-label">{{ m.mois }}</div>
               </div>
             </div>
-            <div class="empty-state" *ngIf="!d.empruntsParMois?.length">
-              <p class="muted">Aucune donnée d'emprunt mensuel disponible</p>
-            </div>
           </mat-card>
 
           <!-- Répartition par statut -->
-          <mat-card class="chart-card">
+          <mat-card class="chart-card" *ngIf="totalStatuts() !== 0">
             <div class="chart-header">
               <h2>Répartition des emprunts</h2>
               <span class="chart-subtitle">Total: {{ totalStatuts() }} emprunts</span>
             </div>
-            <p class="muted" *ngIf="totalStatuts() === 0">Aucun emprunt enregistré.</p>
-            <div class="statut-list" *ngIf="totalStatuts() !== 0">
+            <div class="statut-list">
               <div class="statut-row" *ngFor="let s of d.repartitionStatuts">
                 <div class="statut-head">
                   <span class="dot" [class]="statutClasse(s.statut)"></span>
@@ -82,20 +129,19 @@
           </mat-card>
 
           <!-- Top 5 des livres -->
-          <mat-card class="chart-card wide">
+          <mat-card class="chart-card wide" *ngIf="d.topLivres?.length">
             <div class="chart-header">
               <h2>Top 5 des livres les plus empruntés</h2>
               <span class="chart-subtitle">Classement par popularité</span>
             </div>
-            <p class="muted" *ngIf="!(d.topLivres?.length)">Pas encore de données d'emprunt.</p>
-            <div class="top-list" *ngIf="d.topLivres?.length">
+            <div class="top-list">
               <div class="top-row" *ngFor="let l of d.topLivres; let i = index">
                 <span class="top-rank">{{ i + 1 }}</span>
                 <span class="top-titre">{{ l.titre }}</span>
                 <div class="top-track">
                   <div class="top-fill" [style.width.%]="largeurTop(l.nombreEmprunts)"></div>
                 </div>
-                <span class="top-count">{{ l.nombreEmprunts }} emprunt{{ l.nombreEmprunts > 1 ? 's' : '' }}</span>
+                <span class="top-count">{{ l.nombreEmprunts }}</span>
               </div>
             </div>
           </mat-card>
