@@ -25,6 +25,11 @@ public record LivreRequest(
 
         @NotNull(message = "Au moins un auteur est requis")
         @Size(min = 1, message = "Au moins un auteur est requis")
-        List<Long> auteurIds
+        List<Long> auteurIds,
+
+        String imageUrl,
+
+        @Size(max = 2000, message = "La description ne doit pas dépasser 2000 caractères")
+        String description
 ) {
 }

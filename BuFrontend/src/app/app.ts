@@ -44,15 +44,18 @@ export class App implements OnInit {
   readonly isBiblio = this.auth.isBibliothecaire;
   readonly isAdmin = this.auth.isAdmin;
 
-  // Sidebar réduit au démarrage
+  // Sidebar
   opened = signal(false);
   isHovered = signal(false);
 
+  // État des sous-menus
   private submenusState = signal<Record<string, boolean>>({});
 
+  // Pages sans layout (initialisation immédiate avec le chemin)
   isLoginPage = signal(window.location.pathname === '/login');
+  showLayout = signal(!['/login', '/register', '/accueil'].includes(window.location.pathname));
 
-  // Initiales utilisées par le badge avatar de la navbar (ex: "Awa Diop" -> "AD")
+  // Initiales de l'utilisateur
   readonly initials = computed(() => {
     const nom = this.user()?.nom ?? '';
     return nom
@@ -63,6 +66,7 @@ export class App implements OnInit {
       .join('');
   });
 
+  // Liens de navigation avec sous-menus
   private readonly liens: NavLink[] = [
     { path: '/catalogue', label: 'Catalogue', icon: 'bx-book', public: true },
     { path: '/mes-emprunts', label: 'Mes emprunts', icon: 'bx-import', auth: true, etudiant: true },
@@ -96,13 +100,19 @@ export class App implements OnInit {
   );
 
   ngOnInit() {
+    // Mise à jour lors des changements de route
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
       .subscribe(() => {
-        this.isLoginPage.set(this.router.url === '/login');
+        const fullUrl = this.router.url;
+        const path = fullUrl.split('?')[0];   // ← on ignore les paramètres
+        this.isLoginPage.set(path === '/login');
+        const noLayoutRoutes = ['/login', '/register', '/accueil'];
+        this.showLayout.set(!noLayoutRoutes.includes(path));
       });
   }
 
+  // Gestion des sous-menus
   toggleSubmenu(path: string) {
     this.submenusState.update((state) => ({
       ...state,
@@ -114,6 +124,7 @@ export class App implements OnInit {
     return this.submenusState()[path] || false;
   }
 
+  // Gestion de la sidebar
   collapseSidebar() {
     this.opened.set(false);
   }

@@ -90,6 +90,8 @@ public class LivreService {
         livre.setAnneePublication(req.anneePublication());
         livre.setCategorie(req.categorie());
         livre.setStockTotal(req.stockTotal());
+        livre.setImageUrl(req.imageUrl());
+        livre.setDescription(req.description());
         if (nouveau) {
             livre.setStockDisponible(req.stockTotal());
         }

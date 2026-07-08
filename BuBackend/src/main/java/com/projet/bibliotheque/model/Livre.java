@@ -30,6 +30,14 @@ public class Livre {
     @Column(nullable = false)
     private Integer stockDisponible = 1;
 
+    @Lob
+    @Column(name = "image_url", columnDefinition = "LONGTEXT")
+    private String imageUrl;
+
+    @Lob
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
     // Relation N,N : un livre peut avoir plusieurs auteurs et inversement
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "livre_auteur",
@@ -94,6 +102,22 @@ public class Livre {
 
     public void setStockDisponible(Integer stockDisponible) {
         this.stockDisponible = stockDisponible;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public List<Auteur> getAuteurs() {

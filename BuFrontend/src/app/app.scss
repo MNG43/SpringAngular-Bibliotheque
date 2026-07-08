@@ -1,30 +1,56 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
 
+:host {
+  --ink: #0f1222;
+  --ink-soft: #6b7280;
+  --ink-faint: #9aa0ae;
+  --line: #e8eaf0;
+  --surface: #ffffff;
+  --canvas: #f7f8fa;
+  --indigo: #4f46e5;
+  --indigo-soft: #eef0ff;
+  --gold: #b8842f;
+  --gold-soft: #fbf1de;
+  --teal: #0f766e;
+  --teal-soft: #e6f5f3;
+  --plum: #86198f;
+  --plum-soft: #f8e9f9;
+  --slate: #475569;
+  --slate-soft: #eef1f5;
+  --green: #15803d;
+  --green-soft: #eafaf0;
+  --red: #b91c1c;
+  --red-soft: #fdecec;
+  --amber: #b45309;
+  --amber-soft: #fdf1de;
+
+  // Sidebar clair (gris/blanc)
+  --sidebar-bg: #f8f9fa;
+  --sidebar-bg-elevated: #e9ecef;
+  --sidebar-text: #495057;
+  --sidebar-text-active: #212529;
+  --sidebar-line: rgba(0, 0, 0, 0.06);
+
+  --toolbar-height: 64px;
+  --sidebar-width: 264px;
+  --sidebar-width-closed: 76px;
+
+  display: block;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ============================================================
+   LAYOUT : NAVBAR + SIDEBAR + MAIN
+   ============================================================ */
+
+/* Conteneur principal de l'application */
 :host {
   display: flex;
   flex-direction: column;
   height: 100dvh;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-:root {
-  --ink: #0f1222;
-  --ink-soft: #6b7280;
-  --line: #e8eaf0;
-  --indigo: #4f46e5;
-  --indigo-soft: #eef0ff;
-  --gold: #b8842f;
-  --sidebar-bg: #12131c;
-  --sidebar-bg-elevated: #1c1e2b;
-  --sidebar-text: #9598ab;
-  --sidebar-text-active: #ffffff;
-  --sidebar-line: rgba(255, 255, 255, 0.07);
-  --toolbar-height: 64px;
-  --sidebar-width: 264px;
-  --sidebar-width-closed: 76px;
-}
-
-/* ===================== Navbar ===================== */
+/* ---- Navbar ---- */
 .app-toolbar {
   position: sticky;
   top: 0;
@@ -45,6 +71,7 @@
   align-items: center;
   gap: 10px;
 }
+
 .brand-mark {
   display: inline-flex;
   align-items: center;
@@ -55,22 +82,26 @@
   background: var(--indigo);
   color: #ffffff;
 }
+
 .brand-mark mat-icon {
   font-size: 19px;
   height: 19px;
   width: 19px;
 }
+
 .brand-text {
   display: flex;
   flex-direction: column;
   line-height: 1.1;
 }
+
 .brand-text strong {
   font-size: 14.5px;
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
+
 .brand-text small {
   font-size: 11px;
   font-weight: 500;
@@ -88,7 +119,6 @@
   border-radius: 9px !important;
 }
 
-/* Avatar chip (navbar) */
 .user-btn {
   display: inline-flex;
   align-items: center;
@@ -100,10 +130,12 @@
   padding: 4px 10px 4px 4px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
+
 .user-btn:hover {
   background: #f7f7fb;
   border-color: var(--line);
 }
+
 .user-btn .avatar {
   display: inline-flex;
   align-items: center;
@@ -117,10 +149,12 @@
   font-weight: 700;
   letter-spacing: 0.02em;
 }
+
 .user-btn .user-name {
   font-weight: 500;
   font-size: 13.5px;
 }
+
 .user-btn .chevron {
   font-size: 18px;
   color: var(--ink-soft);
@@ -131,30 +165,34 @@
   .user-name {
     display: none;
   }
+
   .brand-text small {
     display: none;
   }
+
   .app-toolbar {
     padding: 0 12px;
   }
 }
 
-/* Menu déroulant utilisateur */
 .user-info {
   padding: 14px 18px;
   border-bottom: 1px solid var(--line);
   min-width: 220px;
 }
+
 .user-info-name {
   font-weight: 600;
   font-size: 14px;
   color: var(--ink);
 }
+
 .user-info-email {
   font-size: 12px;
   color: var(--ink-soft);
   margin-top: 2px;
 }
+
 .user-info-role {
   font-size: 11px;
   font-weight: 600;
@@ -168,7 +206,7 @@
   color: var(--indigo);
 }
 
-/* ===================== Sidebar ===================== */
+/* ---- Sidebar ---- */
 .sidebar {
   background-color: var(--sidebar-bg);
   width: var(--sidebar-width);
@@ -181,13 +219,13 @@
   display: flex;
   flex-direction: column;
   border-right: 1px solid var(--sidebar-line);
-  transition: width 0.25s ease;
+  transition: width 0.25s ease, transform 0.3s ease;
 }
+
 .sidebar.close {
   width: var(--sidebar-width-closed);
 }
 
-/* En-tête de la sidebar : marque miniature + bouton réduire/déployer */
 .sidebar-head {
   display: flex;
   align-items: center;
@@ -195,6 +233,7 @@
   padding: 14px 14px 10px;
   flex-shrink: 0;
 }
+
 .sidebar-head-mark {
   display: inline-flex;
   align-items: center;
@@ -203,21 +242,25 @@
   height: 30px;
   border-radius: 8px;
   background: var(--sidebar-bg-elevated);
-  color: var(--gold);
+  color: var(--indigo);
   flex-shrink: 0;
 }
+
 .sidebar-head-mark mat-icon {
   font-size: 17px;
   height: 17px;
   width: 17px;
 }
+
 .sidebar.close .sidebar-head {
   justify-content: center;
   padding: 14px 0 10px;
 }
+
 .sidebar.close .sidebar-head-mark {
   display: none;
 }
+
 .collapse-toggle {
   display: inline-flex;
   align-items: center;
@@ -231,26 +274,29 @@
   cursor: pointer;
   transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
+
 .collapse-toggle:hover {
   background: var(--indigo);
   border-color: var(--indigo);
   color: #ffffff;
 }
+
 .collapse-toggle i {
   font-size: 16px;
 }
 
-/* Corps scrollable */
 .menu_content {
   flex: 1 1 auto;
   overflow-y: auto;
   padding: 4px 14px 10px;
 }
+
 .menu_content::-webkit-scrollbar {
   width: 5px;
 }
+
 .menu_content::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 4px;
 }
 
@@ -261,15 +307,16 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.07em;
-  color: rgba(255, 255, 255, 0.28);
+  color: rgba(0, 0, 0, 0.35);
 }
+
 .sidebar.close .menu_title {
   height: 1px;
   width: 16px;
   margin: 10px auto;
   padding: 0;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(0, 0, 0, 0.12);
   color: transparent;
 }
 
@@ -278,9 +325,11 @@
   margin: 0;
   list-style: none;
 }
+
 .item {
   margin-bottom: 2px;
 }
+
 .item .item {
   margin-bottom: 1px;
 }
@@ -313,9 +362,11 @@
   font-weight: 500;
   transition: background 0.15s ease, color 0.15s ease;
 }
+
 .sidebar.close .navlink {
   display: none;
 }
+
 .nav_link:hover {
   color: var(--sidebar-text-active);
   background: var(--sidebar-bg-elevated);
@@ -324,31 +375,38 @@
 .submenu_item {
   cursor: pointer;
 }
+
 .submenu {
   display: none;
   margin: 2px 0 4px;
 }
+
 .submenu_item .arrow-left {
   margin-left: auto;
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.3);
+  color: rgba(0, 0, 0, 0.2);
   transition: transform 0.25s ease;
   flex-shrink: 0;
 }
+
 .arrow-left.rotated {
   transform: rotate(90deg);
 }
+
 .sidebar.close .submenu {
   display: none;
 }
-.show_submenu ~ .submenu,
+
+.show_submenu~.submenu,
 .submenu.show_submenu {
   display: block;
 }
+
 .submenu .sublink {
   padding: 6px 9px 6px 30px;
   font-size: 13px;
 }
+
 .submenu .sublink .navlink_icon {
   font-size: 15px;
   min-width: 24px;
@@ -356,13 +414,13 @@
   line-height: 24px;
 }
 
-/* Lien actif : onglet-signet indigo, clin d'oeil au theme bibliotheque */
 .active-link {
-  background-color: rgba(79, 70, 229, 0.16) !important;
-  color: var(--sidebar-text-active) !important;
+  background-color: rgba(79, 70, 229, 0.12) !important;
+  color: var(--indigo) !important;
   font-weight: 600 !important;
   position: relative;
 }
+
 .active-link::after {
   content: "";
   position: absolute;
@@ -374,21 +432,23 @@
   background: var(--gold);
   clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 78%, 0 100%);
 }
+
 .sidebar.close .active-link::after {
   right: 6px;
   width: 5px;
   height: 12px;
 }
+
 .active-link .navlink_icon {
-  color: #a5b4fc;
+  color: var(--indigo);
 }
 
-/* Pied de sidebar */
 .sidebar-footer {
   flex-shrink: 0;
   padding: 10px 14px 16px;
   border-top: 1px solid var(--sidebar-line);
 }
+
 .logout-mini {
   display: flex;
   align-items: center;
@@ -405,19 +465,22 @@
   font-weight: 500;
   transition: background 0.15s ease, color 0.15s ease;
 }
+
 .logout-mini:hover {
-  background: rgba(220, 38, 38, 0.14);
-  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.08);
+  color: #b91c1c;
 }
+
 .sidebar.close .logout-mini .navlink {
   display: none;
 }
+
 .sidebar.close .logout-mini {
   justify-content: center;
   padding: 7px 0;
 }
 
-/* ===================== Contenu principal ===================== */
+/* ---- Main content ---- */
 .main-content {
   margin-left: var(--sidebar-width);
   margin-top: var(--toolbar-height);
@@ -427,10 +490,14 @@
   min-height: calc(100vh - var(--toolbar-height));
   background-color: #f7f8fa;
 }
+
 .main-content.sidebar-closed {
   margin-left: var(--sidebar-width-closed);
 }
 
+/* ============================================================
+   RESPONSIVE DU LAYOUT
+   ============================================================ */
 @media screen and (max-width: 768px) {
   .sidebar {
     left: -100%;
@@ -438,16 +505,561 @@
     top: 0;
     height: 100vh;
   }
+
   .sidebar.close {
     left: -100%;
   }
+
   .sidebar.open {
     left: 0;
   }
+
   .main-content {
-    margin-left: 0;
+    margin-left: 0 !important;
   }
+
   .main-content.sidebar-closed {
-    margin-left: 0;
+    margin-left: 0 !important;
+  }
+}
+
+/* ============================================================
+   STYLES DES PAGES (CATALOGUE, ETC.)
+   ============================================================ */
+
+.page {
+  max-width: 1540px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ---- En-tête de page ---- */
+.page-header {
+  margin-bottom: 22px;
+}
+
+.page-logo {
+  height: 114px;
+  width: auto;
+  margin-bottom: 4px;
+  display: block;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 700;
+  font-size: 30px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+/* ---- Barre de recherche / filtres ---- */
+.toolbar-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 22px;
+  box-shadow: 0 1px 2px rgba(15, 18, 34, 0.03);
+}
+
+.search {
+  flex: 1 1 320px;
+}
+
+.search .mat-mdc-form-field-subscript-wrapper {
+  display: none;
+}
+
+::ng-deep .search .mdc-notched-outline>* {
+  border-radius: 10px !important;
+}
+
+::ng-deep .search .mat-mdc-form-field-icon-prefix mat-icon,
+::ng-deep .search .mat-mdc-form-field-icon-suffix mat-icon {
+  color: var(--ink-faint);
+}
+
+.filter-group {
+  border-radius: 10px !important;
+  overflow: hidden;
+  border: 1px solid var(--line) !important;
+  align-self: center;
+}
+
+::ng-deep .filter-group .mat-button-toggle-label-content {
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 34px;
+  padding: 0 14px;
+  color: var(--ink-soft);
+}
+
+::ng-deep .filter-group .mat-button-toggle-checked {
+  background-color: var(--indigo) !important;
+}
+
+::ng-deep .filter-group .mat-button-toggle-checked .mat-button-toggle-label-content {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+::ng-deep .filter-group .mat-button-toggle+.mat-button-toggle {
+  border-left: 1px solid var(--line) !important;
+}
+
+/* ---- Grille de résultats ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 18px;
+}
+
+/* ---- Carte livre ---- */
+.livre-card {
+  cursor: pointer;
+  overflow: hidden;
+  border-radius: 14px !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.livre-card:hover {
+  transform: translateY(-3px);
+  border-color: transparent !important;
+  box-shadow: 0 10px 24px rgba(15, 18, 34, 0.09) !important;
+}
+
+.spine {
+  height: 4px;
+  width: 100%;
+}
+
+.livre-body {
+  padding: 16px !important;
+}
+
+.livre-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cover {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 700;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.livre-titre {
+  margin: 0 0 4px;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-weight: 600;
+  font-size: 16.5px;
+  line-height: 1.3;
+  color: var(--ink);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.livre-auteurs {
+  margin: 0 0 12px;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.livre-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Accents par catégorie */
+.accent-indigo .spine {
+  background: var(--indigo);
+}
+
+.accent-indigo .cover {
+  background: var(--indigo-soft);
+  color: var(--indigo);
+}
+
+.accent-gold .spine {
+  background: var(--gold);
+}
+
+.accent-gold .cover {
+  background: var(--gold-soft);
+  color: var(--gold);
+}
+
+.accent-teal .spine {
+  background: var(--teal);
+}
+
+.accent-teal .cover {
+  background: var(--teal-soft);
+  color: var(--teal);
+}
+
+.accent-plum .spine {
+  background: var(--plum);
+}
+
+.accent-plum .cover {
+  background: var(--plum-soft);
+  color: var(--plum);
+}
+
+.accent-slate .spine {
+  background: var(--slate);
+}
+
+.accent-slate .cover {
+  background: var(--slate-soft);
+  color: var(--slate);
+}
+
+/* ---- Chips ---- */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.chip mat-icon {
+  font-size: 13px;
+  width: 13px;
+  height: 13px;
+}
+
+.chip-success {
+  background: var(--green-soft);
+  color: var(--green);
+}
+
+.chip-danger {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.chip-warn {
+  background: var(--amber-soft);
+  color: var(--amber);
+}
+
+.chip-neutral {
+  background: var(--indigo-soft);
+  color: var(--indigo);
+}
+
+/* ---- État vide ---- */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 64px 20px;
+  border: 1px dashed var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+
+.empty-state mat-icon {
+  font-size: 34px;
+  width: 34px;
+  height: 34px;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+.empty-title {
+  margin: 0 0 4px;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.empty-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+/* ---- Squelettes de chargement ---- */
+.skeleton {
+  cursor: default;
+  pointer-events: none;
+}
+
+.skeleton .skeleton-bar {
+  height: 4px;
+  width: 100%;
+  background: var(--line);
+}
+
+.skeleton-line {
+  border-radius: 6px;
+  background: linear-gradient(90deg, #eef0f4 25%, #f6f7fa 37%, #eef0f4 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+.skeleton-line--cover {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.skeleton-line--title {
+  width: 85%;
+  height: 15px;
+  margin-bottom: 8px;
+}
+
+.skeleton-line--author {
+  width: 55%;
+  height: 12px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* ============================================================
+   RESPONSIVE DES PAGES
+   ============================================================ */
+
+@media (max-width: 1024px) {
+  .page-logo {
+    height: 80px;
+  }
+
+  .page-header h1 {
+    font-size: 26px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 0 16px;
+  }
+
+  .page-logo {
+    height: 60px;
+  }
+
+  .page-header h1 {
+    font-size: 22px;
+  }
+
+  .page-subtitle {
+    font-size: 12.5px;
+  }
+
+  .toolbar-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .search {
+    flex: 1 1 auto;
+  }
+
+  .filter-group {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  ::ng-deep .filter-group .mat-button-toggle {
+    flex: 1 1 auto;
+    text-align: center;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .livre-body {
+    padding: 12px !important;
+  }
+
+  .livre-titre {
+    font-size: 14px;
+  }
+
+  .cover {
+    width: 34px;
+    height: 34px;
+    font-size: 15px;
+  }
+
+  .chip {
+    font-size: 10px;
+    padding: 2px 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page {
+    padding: 0 10px;
+  }
+
+  .page-logo {
+    height: 48px;
+    margin-bottom: 2px;
+  }
+
+  .page-header h1 {
+    font-size: 18px;
+  }
+
+  .page-subtitle {
+    font-size: 11.5px;
+  }
+
+  .toolbar-card {
+    padding: 10px;
+    border-radius: 10px;
+  }
+
+  ::ng-deep .search .mat-mdc-form-field-infix {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  ::ng-deep .search .mat-mdc-form-field-flex {
+    min-height: 40px;
+  }
+
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .livre-card {
+    border-radius: 10px !important;
+  }
+
+  .livre-body {
+    padding: 10px !important;
+  }
+
+  .livre-titre {
+    font-size: 13px;
+  }
+
+  .livre-auteurs {
+    font-size: 11px;
+    margin-bottom: 8px;
+  }
+
+  .cover {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .livre-top {
+    margin-bottom: 8px;
+  }
+
+  .chip {
+    font-size: 9px;
+    padding: 1px 6px;
+    gap: 2px;
+  }
+
+  .chip mat-icon {
+    font-size: 11px;
+    width: 11px;
+    height: 11px;
+  }
+
+  .empty-state {
+    padding: 32px 16px;
+  }
+
+  .empty-state mat-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+  }
+
+  .empty-title {
+    font-size: 14px;
+  }
+
+  .empty-hint {
+    font-size: 12px;
+  }
+
+  .skeleton-line--cover {
+    width: 28px;
+    height: 28px;
+  }
+
+  .skeleton-line--title {
+    height: 13px;
+  }
+
+  .skeleton-line--author {
+    height: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .grid {
+    grid-template-columns: 1fr;
   }
 }

@@ -12,6 +12,8 @@ public record LivreDto(
         Integer stockDisponible,
         boolean disponible,
         int fileAttente,
-        List<AuteurSimpleDto> auteurs
+        List<AuteurSimpleDto> auteurs,
+        String imageUrl,
+        String description
 ) {
 }

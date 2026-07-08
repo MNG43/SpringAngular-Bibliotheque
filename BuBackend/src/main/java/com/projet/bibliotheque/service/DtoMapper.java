@@ -35,7 +35,9 @@ public class DtoMapper {
                 l.getStockDisponible(),
                 l.getStockDisponible() != null && l.getStockDisponible() > 0,
                 fileAttente,
-                l.getAuteurs().stream().map(this::toAuteurSimple).toList()
+                l.getAuteurs().stream().map(this::toAuteurSimple).toList(),
+                l.getImageUrl(),
+                l.getDescription()
         );
     }
 

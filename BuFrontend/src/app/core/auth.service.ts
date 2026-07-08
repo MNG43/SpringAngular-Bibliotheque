@@ -36,7 +36,15 @@ export class AuthService {
     return this.http.get<Utilisateur>('/api/auth/me');
   }
 
+  /** Déconnexion complète avec suppression des données locales */
   logout(): void {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+    this.currentUser.set(null);
+  }
+
+  /** Nettoie la session sans rediriger (utilisé par la page d'accueil) */
+  clearSession(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
     this.currentUser.set(null);

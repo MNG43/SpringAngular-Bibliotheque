@@ -59,6 +59,8 @@ export interface Livre {
   disponible: boolean;
   fileAttente: number;
   auteurs: AuteurSimple[];
+  imageUrl: string | null;
+  description: string | null;
 }
 
 export interface LivreSimple {
@@ -135,6 +137,8 @@ export interface LivreRequest {
   categorie: string | null;
   stockTotal: number;
   auteurIds: number[];
+  imageUrl: string | null;
+  description: string | null;
 }
 
 export interface AuteurRequest {
