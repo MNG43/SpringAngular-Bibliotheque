@@ -23,7 +23,11 @@
 
       <div class="detail-grid">
         <div class="cover-col">
-          <div class="cover">{{ initiale(l) }}</div>
+          @if (l.imageUrl) {
+            <img class="cover cover-image" [src]="l.imageUrl" alt="Couverture de {{ l.titre }}" />
+          } @else {
+            <div class="cover">{{ initiale(l) }}</div>
+          }
           <div class="cote">
             <span class="cote-label">Cote</span>
             <span class="cote-value">{{ cote(l) }}</span>
@@ -43,6 +47,10 @@
               @if (!l.auteurs.length) { <mat-chip>Auteur inconnu</mat-chip> }
             </mat-chip-set>
           </div>
+
+          @if (l.description) {
+            <p class="description">{{ l.description }}</p>
+          }
 
           <mat-divider />
 

@@ -99,6 +99,18 @@
 .accent-plum .cover   { background: var(--plum-soft); color: var(--plum); }
 .accent-slate .cover  { background: var(--slate-soft); color: var(--slate); }
 
+.cover-image {
+  object-fit: cover;
+  background: none;
+}
+
+.description {
+  margin: 4px 0 0;
+  color: var(--ink-soft, #4b5563);
+  font-size: 14.5px;
+  line-height: 1.55;
+}
+
 /* Étiquette façon fiche de classification, collée sous la couverture */
 .cote {
   display: flex;

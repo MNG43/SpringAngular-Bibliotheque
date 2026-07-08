@@ -1,13 +1,12 @@
-import { Component, inject, signal, computed, ElementRef, viewChild } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Auteur, Livre, LivreRequest } from '../../core/models';
 import { Ui } from '../../core/ui';
 
@@ -22,7 +21,7 @@ const TAILLE_MAX_IMAGE = 2 * 1024 * 1024; // 2 Mo
   selector: 'app-livre-dialog',
   imports: [
     CommonModule, ReactiveFormsModule, MatDialogModule, MatFormFieldModule, MatInputModule,
-    MatButtonModule, MatIconModule, MatChipsModule, MatAutocompleteModule,
+    MatSelectModule, MatButtonModule, MatIconModule,
   ],
   template: `
     <div class="dialog-head">
@@ -39,35 +38,14 @@ const TAILLE_MAX_IMAGE = 2 * 1024 * 1024; // 2 Mo
               <input matInput formControlName="titre" />
             </mat-form-field>
 
-            <!-- Sélection des auteurs par puces + autocomplétion -->
             <mat-form-field appearance="outline" class="full">
               <mat-label>Auteur(s)</mat-label>
-              <mat-chip-grid #chipGrid aria-label="Auteurs sélectionnés">
-                @for (a of auteursSelectionnes(); track a.id) {
-                  <mat-chip-row (removed)="retirerAuteur(a)">
-                    {{ a.prenom }} {{ a.nom }}
-                    <button matChipRemove aria-label="Retirer l'auteur">
-                      <mat-icon>cancel</mat-icon>
-                    </button>
-                  </mat-chip-row>
-                }
-                <input
-                  placeholder="Taper un nom d'auteur..."
-                  #auteurInput
-                  [matChipInputFor]="chipGrid"
-                  [matAutocomplete]="auto"
-                  [formControl]="rechercheAuteur"
-                />
-              </mat-chip-grid>
-              <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onAuteurChoisi($event)">
-                @for (a of auteursSuggeres(); track a.id) {
+              <mat-select formControlName="auteurIds" multiple>
+                @for (a of data.auteurs; track a.id) {
                   <mat-option [value]="a.id">{{ a.prenom }} {{ a.nom }}</mat-option>
                 }
-              </mat-autocomplete>
-              <mat-hint>Tape un nom puis sélectionne dans la liste — un livre peut avoir plusieurs auteurs</mat-hint>
-              @if (auteursVide()) {
-                <mat-error>Au moins un auteur est requis</mat-error>
-              }
+              </mat-select>
+              <mat-hint>Un livre peut avoir plusieurs auteurs</mat-hint>
             </mat-form-field>
 
             <div class="row">
@@ -123,7 +101,7 @@ const TAILLE_MAX_IMAGE = 2 * 1024 * 1024; // 2 Mo
 
     <mat-dialog-actions align="end">
       <button mat-button mat-dialog-close class="btn-ghost">Annuler</button>
-      <button mat-flat-button class="btn-primary" [disabled]="form.invalid || auteursVide()" (click)="valider()">
+      <button mat-flat-button class="btn-primary" [disabled]="form.invalid" (click)="valider()">
         Enregistrer
       </button>
     </mat-dialog-actions>
@@ -185,29 +163,7 @@ export class LivreDialog {
   private ui = inject(Ui);
   data = inject<DialogData>(MAT_DIALOG_DATA);
 
-  auteurInput = viewChild<ElementRef<HTMLInputElement>>('auteurInput');
-
   apercu = signal<string | null>(this.data.livre?.imageUrl ?? null);
-  rechercheAuteur = this.fb.control('');
-
-  auteursSelectionnes = signal<Auteur[]>(
-    this.data.livre
-      ? this.data.auteurs.filter(a => this.data.livre!.auteurs.some(sa => sa.id === a.id))
-      : []
-  );
-
-  auteurEnCours = signal(this.rechercheAuteur.value ?? '');
-
-  auteursSuggeres = computed(() => {
-    const texte = (this.rechercheAuteur.value ?? '').toLowerCase().trim();
-    const dejaChoisis = new Set(this.auteursSelectionnes().map(a => a.id));
-    return this.data.auteurs
-      .filter(a => !dejaChoisis.has(a.id))
-      .filter(a => !texte || `${a.prenom} ${a.nom}`.toLowerCase().includes(texte))
-      .slice(0, 20);
-  });
-
-  auteursVide = computed(() => this.auteursSelectionnes().length === 0);
 
   form = this.fb.nonNullable.group({
     titre: [this.data.livre?.titre ?? '', Validators.required],
@@ -215,23 +171,10 @@ export class LivreDialog {
     anneePublication: [this.data.livre?.anneePublication ?? null as number | null],
     categorie: [this.data.livre?.categorie ?? ''],
     stockTotal: [this.data.livre?.stockTotal ?? 1, [Validators.required, Validators.min(0)]],
+    auteurIds: [this.data.livre?.auteurs.map(a => a.id) ?? [] as number[],
+      [Validators.required, Validators.minLength(1)]],
     description: [this.data.livre?.description ?? '' as string | null],
   });
-
-  onAuteurChoisi(event: MatAutocompleteSelectedEvent): void {
-    const id = event.option.value as number;
-    const auteur = this.data.auteurs.find(a => a.id === id);
-    if (auteur) {
-      this.auteursSelectionnes.update(list => [...list, auteur]);
-    }
-    this.rechercheAuteur.setValue('');
-    const input = this.auteurInput()?.nativeElement;
-    if (input) input.value = '';
-  }
-
-  retirerAuteur(auteur: Auteur): void {
-    this.auteursSelectionnes.update(list => list.filter(a => a.id !== auteur.id));
-  }
 
   onFichierChoisi(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -260,12 +203,8 @@ export class LivreDialog {
   }
 
   valider(): void {
-    if (this.form.invalid || this.auteursVide()) return;
-    const req: LivreRequest = {
-      ...this.form.getRawValue(),
-      imageUrl: this.apercu(),
-      auteurIds: this.auteursSelectionnes().map(a => a.id),
-    };
+    if (this.form.invalid) return;
+    const req: LivreRequest = { ...this.form.getRawValue(), imageUrl: this.apercu() };
     this.ref.close(req);
   }
 }

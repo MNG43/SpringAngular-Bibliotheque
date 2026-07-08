@@ -69,7 +69,11 @@
           <div class="spine"></div>
           <mat-card-content class="livre-body">
             <div class="livre-top">
-              <span class="cover">{{ initiale(livre) }}</span>
+              @if (livre.imageUrl) {
+                <img class="cover cover-image" [src]="livre.imageUrl" alt="Couverture de {{ livre.titre }}" />
+              } @else {
+                <span class="cover">{{ initiale(livre) }}</span>
+              }
               @if (livre.disponible) {
                 <span class="chip chip-success">
                   <mat-icon>check_circle</mat-icon>{{ livre.stockDisponible }} dispo

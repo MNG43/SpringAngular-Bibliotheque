@@ -163,6 +163,11 @@
   flex-shrink: 0;
 }
 
+.cover-image {
+  object-fit: cover;
+  background: none;
+}
+
 .livre-titre {
   margin: 0 0 4px;
   font-family: 'Source Serif 4', Georgia, serif;
